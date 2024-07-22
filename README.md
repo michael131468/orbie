@@ -70,7 +70,7 @@ statically parse the imports dependency tree. Orbie can then filter the project
 dependencies to find dependencies that are not permitted. If the number of these
 exceed zero, the script will exit with error code `1`.
 
-[importlab]: https://github.com/google/importlab)
+[importlab]: https://github.com/google/importlab
 
 ## Installation
 
