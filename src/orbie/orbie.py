@@ -310,30 +310,28 @@ def is_excepted(
         )
         return True
 
-    # Handle exceptions that are marking files
-    if str(relative_path) in ignore_config.paths:
-        logger.debug("Ignoring %s as it's marked as an exception", imported_path)
-        return True
-
-    # Handle exceptions that are marking a directory
-    # In case an exception path is a directory, check if relative_path
-    # is a subdir of said exception path
-    logger.debug("Checking paths exceptions for directory exceptions")
+    # Handle exceptions that are marking explicit files or directories
+    logger.debug("Checking explicit path exceptions")
     for exception in ignore_config.paths:
         exception_path = project_root / exception
-        logger.debug("Checking %s", exception_path)
+        logger.debug("Checking exception path: %s", exception_path)
 
-        if not exception_path.is_dir():
-            logger.debug("Exception path is not a directory")
-            continue
-
-        logger.debug("Exception path is a directory")
-        if exception_path not in relative_path.resolve().parents:
-            logger.debug("Exception path is not a parent of %s", relative_path)
-            continue
-
-        logger.debug("Ignoring %s because exception path is a parent", relative_path)
-        return True
+        if exception_path.is_file():
+            logger.debug("Exception path is a file")
+            if relative_path.resolve() == exception_path:
+                logger.debug(
+                    "Ignoring %s because exception path matches relative path %s",
+                    imported_path,
+                    relative_path.resolve(),
+                )
+                return True
+        elif exception_path.is_dir():
+            logger.debug("Exception path is a directory")
+            if exception_path in relative_path.resolve().parents:
+                logger.debug(
+                    "Ignoring %s because exception path is a parent", imported_path
+                )
+                return True
 
     return False
 

@@ -28,6 +28,22 @@ else
   FAILED=$((FAILED+1))
 fi
 
+# Expect 0 tangled modules after marking exceptions explicitly
+if pdm run orbie --debug src/example/example_a/example_a.py --exception src/example/example_shared/shared.py --except-siblings --except-descendents; then
+  echo "PASS: Success as expected"
+else
+  echo "FAIL: Unexpected failure"
+  FAILED=$((FAILED+1))
+fi
+
+# Test with ./ style relative paths
+if pdm run orbie --debug src/example/example_a/example_a.py --exception ./src/example/example_shared/shared.py --except-siblings --except-descendents; then
+  echo "PASS: Success as expected"
+else
+  echo "FAIL: Unexpected failure"
+  FAILED=$((FAILED+1))
+fi
+
 # Expect 1 tangled modules
 if pdm run orbie src/example/example_b/example_b.py; then
   echo "FAIL: Unexpected success"
